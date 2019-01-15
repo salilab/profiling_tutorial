@@ -66,7 +66,7 @@ view it in a PDF viewer:
 
     pprof --pdf /usr/bin/python out.prof  > complete.pdf
 
-The resulting PDF can be [seen here](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/complete.pdf).
+The resulting PDF can be [seen here](https://github.com/salilab/profiling_tutorial/blob/master/profiles/complete.pdf).
 This view can be rather overwhelming, since it shows every function (in %IMP
 itself, but also in the Python interpreter and in the system libraries) that
 was reponsible for a significant chunk of the program's runtime. Each node
@@ -80,16 +80,16 @@ In most cases it makes more sense to focus in on a subset of the program. For
 a typical application of %IMP, a fixed setup is followed by a long sampling
 run where the majority of the CPU time is spent (in the
 function IMP::Optimizer::optimize). Inspection of the
-[complete profile](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/complete.pdf)
+[complete profile](https://github.com/salilab/profiling_tutorial/blob/master/profiles/complete.pdf)
 confirms that this is the case here too. We can make such a focused graph
 using the `--focus` option to `pprof`:
 
     pprof --pdf --focus optimize /usr/bin/python out.prof  > optimize.pdf
 
-The resulting PDF can be [seen here](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/optimize.pdf). Let's zoom in on part of
-the graph:
+The resulting PDF can be [seen here](https://github.com/salilab/profiling_tutorial/blob/master/profiles/optimize.pdf).
+Let's zoom in on part of the graph:
 
-\image html optimize-evaluate.png width=600px
+\image html optimize-evaluate.png width=800px
 
 This shows us that evaluation of the scoring function
 (IMP::ScoringFunction::evaluate) is reponsible for 99.1% of the runtime of
