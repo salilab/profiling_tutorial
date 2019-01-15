@@ -59,3 +59,54 @@ Once the script completes, a file `out.prof` should be produced.
 # Analyze the profile {#analyze}
 
 Analysis of the profile can be done using the `pprof` tool.
+There are many ways to use this tool; see the
+[gperftools documentation](https://htmlpreview.github.io/?https://github.com/gperftools/gperftools/blob/master/docs/cpuprofile.html)
+for more details. A simple way to use it is to generate a PDF file and then
+view it in a PDF viewer:
+
+    pprof --pdf /usr/bin/python out.prof  > complete.pdf
+
+The resulting PDF can be [seen here](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/complete.pdf).
+This view can be rather overwhelming, since it shows every function (in %IMP
+itself, but also in the Python interpreter and in the system libraries) that
+was reponsible for a significant chunk of the program's runtime. Each node
+in the graph shows the name of the function, the percentage of total runtime
+that was spent in the body of this function itself, and the percentage of
+time that was spent both in the function and in other functions that it called.
+Edges in the graph point from calling functions to other functions that were
+called.
+
+In most cases it makes more sense to focus in on a subset of the program. For
+a typical application of %IMP, a fixed setup is followed by a long sampling
+run where the majority of the CPU time is spent (in the
+function IMP::Optimizer::optimize). Inspection of the
+[complete profile](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/complete.pdf)
+confirms that this is the case here too. We can make such a focused graph
+using the `--focus` option to `pprof`:
+
+    pprof --pdf --focus optimize /usr/bin/python out.prof  > optimize.pdf
+
+The resulting PDF can be [seen here](https://raw.githubusercontent.com/salilab/profiling_tutorial/master/profiles/optimize.pdf). Let's zoom in on part of
+the graph:
+
+\image html optimize-evaluate.png width=600px
+
+This shows us that evaluation of the scoring function
+(IMP::ScoringFunction::evaluate) is reponsible for 99.1% of the runtime of
+the sampling. This confirms our expectation that applying Monte Carlo moves
+and applying the Monte Carlo acceptance criterion are fairly inexpensive
+operations. Of that time, roughly one third is spent in
+`before_protected_evaluate`, which does various per-scoring operations,
+such as updating the non-bonded list and ensuring constraints such as rigid
+bodies are satisifed, while the other two thirds is spent calculating
+restraint scores.
+
+Further inspection of the graph can reveal where significant time is being
+spent. This may be because the function is being called more times than is
+necessary, or because the function is inefficient and can be made faster.
+For example, in thise case 20% of the entire runtime is spent in
+IMP::core::RigidBody::update_members, which sets the XYZ coordinates of each
+particle in a rigid body using the rigid body's orientation and the internal
+coordinates (relative to the body's reference frame). This is probably
+inefficient because this update is only necessary after a Monte Carlo move
+that affects a given rigid body, and the majority of moves do not.
