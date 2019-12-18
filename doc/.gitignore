@@ -1,4 +1,7 @@
+rnapolii.cif
+.cache
+.ipynb_checkpoints
 Doxyfile
+profiling.md
+profiling.py
 html
-manual-tags.xml
-ref-tags.xml
