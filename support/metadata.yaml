@@ -1,4 +1,5 @@
 title: Profiling IMP applications
+depends: [coding]
 description: >
     This introduces CPU profiling of IMP code with Google's gperftools package,
     to track down where time is being spent.
